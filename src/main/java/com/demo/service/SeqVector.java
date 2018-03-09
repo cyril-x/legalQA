@@ -2,6 +2,7 @@ package com.demo.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.demo.content.Constant;
 import com.demo.dao.QAEntity;
 import com.demo.dao.SimilarResultDao;
 import com.hankcs.hanlp.mining.word2vec.DocVectorModel;
@@ -30,7 +31,7 @@ public class SeqVector {
 
 
     public SeqVector() throws IOException {
-        WordVectorModel wordVectorModel = new WordVectorModel("/Users/a/Desktop/nlpdemo/data/model/hanlp-wiki-vec-zh.txt");
+        WordVectorModel wordVectorModel = new WordVectorModel(Constant.wiki_vec_url);
         this.docVectorModel = new DocVectorModel(wordVectorModel);
     }
 

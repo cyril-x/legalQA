@@ -1,5 +1,6 @@
 package com.demo.service;
 
+import com.demo.content.Constant;
 import com.demo.dao.QAEntity;
 import com.demo.dao.SimilarResultDao;
 import com.hankcs.hanlp.HanLP;
@@ -32,7 +33,7 @@ public class SimilarResultService {
 
 
     public SimilarResultService() throws IOException {
-        WordVectorModel wordVectorModel = new WordVectorModel("/Users/a/Desktop/nlpdemo/data/model/hanlp-wiki-vec-zh.txt");
+        WordVectorModel wordVectorModel = new WordVectorModel(Constant.wiki_vec_url);
         docVectorModel = new DocVectorModel(wordVectorModel);
 
     }
