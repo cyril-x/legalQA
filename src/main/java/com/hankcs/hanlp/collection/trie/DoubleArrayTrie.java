@@ -213,7 +213,7 @@ public class DoubleArrayTrie<V> implements Serializable, ITrie<V>
         // -- Simple heuristics --
         // if the percentage of non-empty contents in check between the
         // index
-        // 'next_check_pos' and 'check' is greater than some constant value
+        // 'next_check_pos' and 'check' is greater than some content value
         // (e.g. 0.9),
         // new 'next_check_pos' index is written by 'check'.
         if (1.0 * nonzero_num / (pos - nextCheckPos + 1) >= 0.95)

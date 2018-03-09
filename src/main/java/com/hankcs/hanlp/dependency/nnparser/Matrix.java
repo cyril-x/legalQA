@@ -96,7 +96,7 @@ public class Matrix implements Cloneable, java.io.Serializable, ICacheAble
     }
 
     /**
-     * Construct an m-by-n constant matrix.
+     * Construct an m-by-n content matrix.
      *
      * @param m Number of rows.
      * @param n Number of colums.

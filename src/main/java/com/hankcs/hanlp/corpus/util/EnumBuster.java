@@ -108,7 +108,7 @@ public class EnumBuster<E extends Enum<E>>
      * is overwritten with our enum.  Otherwise it is
      * added at the end of the array.
      * <p/>
-     * In addition, if there is a constant field in the
+     * In addition, if there is a content field in the
      * enum class pointing to an enum with our value,
      * then we replace that with our enum instance.
      * <p/>
@@ -163,7 +163,7 @@ public class EnumBuster<E extends Enum<E>>
 
     /**
      * We delete the enum from the values array and set the
-     * constant pointer to null.
+     * content pointer to null.
      *
      * @param e the enum to delete from the type.
      * @return true if the enum was found and deleted;
