@@ -26,19 +26,16 @@ public class SeqVector {
     @Autowired
     SimilarResultDao similarResultDao;
 
-    public DocVectorModel docVectorModel;
+   @Autowired
+    DocVector docVector;
     public ArrayList<QAEntity> question;
 
 
-    public SeqVector() throws IOException {
-        WordVectorModel wordVectorModel = new WordVectorModel(Constant.wiki_vec_url);
-        this.docVectorModel = new DocVectorModel(wordVectorModel);
-    }
 
     public String getSeqVector(int num,String queue) throws Exception {
 
         StringBuffer seqVector =new StringBuffer();
-        Vector vector = docVectorModel.query(queue);
+        Vector vector = docVector.query(queue);
                 if (vector==null){
                     System.out.println(num);
                     return "";

@@ -3,7 +3,6 @@ package com.demo.service;
 import com.demo.content.Constant;
 import com.demo.dao.QAEntity;
 import com.demo.dao.SimilarResultDao;
-import com.hankcs.hanlp.HanLP;
 import com.hankcs.hanlp.mining.word2vec.DocVectorModel;
 import com.hankcs.hanlp.mining.word2vec.WordVectorModel;
 
@@ -28,15 +27,13 @@ public class SimilarResultService {
     @Autowired
     public   SimilarResultDao similarResultDao;
 
-    public  DocVectorModel docVectorModel;
+    @Autowired
+    public DocVector docvector;
+
+
     public  ArrayList<QAEntity> question;
 
 
-    public SimilarResultService() throws IOException {
-        WordVectorModel wordVectorModel = new WordVectorModel(Constant.wiki_vec_url);
-        docVectorModel = new DocVectorModel(wordVectorModel);
-
-    }
 
 
         public JSONArray getAnswer(String queue) throws Exception {
@@ -54,7 +51,7 @@ public class SimilarResultService {
                     System.out.println(i+"ddd");
                 }
                 tempnum = i;
-               temp=docVectorModel.similarity(queue,question.get(i).getQuestionContent());
+               temp=docvector.similarity(queue,question.get(i).getQuestionContent());
                if (temp>result[2]){
                     num[2] = tempnum;
                    result[2] = temp;
