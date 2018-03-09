@@ -1,17 +1,13 @@
 package com.demo.service;
 
-import com.demo.content.Constant;
 import com.demo.dao.QAEntity;
 import com.demo.dao.SimilarResultDao;
-import com.hankcs.hanlp.mining.word2vec.DocVectorModel;
-import com.hankcs.hanlp.mining.word2vec.WordVectorModel;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**

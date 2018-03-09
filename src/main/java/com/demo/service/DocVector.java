@@ -1,6 +1,6 @@
 package com.demo.service;
 
-import com.demo.content.Constant;
+import com.demo.constant.Constant;
 import com.demo.dao.QAEntity;
 import com.hankcs.hanlp.mining.word2vec.DocVectorModel;
 import com.hankcs.hanlp.mining.word2vec.Vector;

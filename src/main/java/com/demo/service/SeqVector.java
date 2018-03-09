@@ -1,18 +1,11 @@
 package com.demo.service;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.demo.content.Constant;
 import com.demo.dao.QAEntity;
 import com.demo.dao.SimilarResultDao;
-import com.hankcs.hanlp.mining.word2vec.DocVectorModel;
 import com.hankcs.hanlp.mining.word2vec.Vector;
-import com.hankcs.hanlp.mining.word2vec.WordVectorModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.ArrayList;
 
 /**

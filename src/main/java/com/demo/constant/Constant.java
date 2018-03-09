@@ -1,4 +1,4 @@
-package com.demo.content;
+package com.demo.constant;
 
 /**
  * @author d-xsj
