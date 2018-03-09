@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript" src="/public/js/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="/public/js/QAFind.js"></script>
+    <style type="text/css">
+        table{
+            border:#00ffff solid 2px;
+            border-collapse:collapse;
+        }
+        td{
+            border:#8080ff solid 2px;
+            padding:10px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>问答系统</title>
+</head>
+<body>
+<div id="answerplain">
+
+    <textarea type="text" id="queuetext" placeholder="请输入问题" maxlength="30" rows="2" cols="48"></textarea>
+
+    <div class="answerbot">
+        <button type="button"  onclick="findAnswer()">回答</button>
+        <label id="answer"></label>
+    </div>
+</div>
+</body>
+</html>

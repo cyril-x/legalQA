@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<style type="text/css">
+    div{
+        margin:10px;
+        border:0;
+        border-radius: 12px;
+        padding:0;
+    }
+    button {
+        background-color: #e7e7e7;
+        border: none;
+        border-radius: 12px;
+        color: black;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+    .botALab {
+        line-height:30px;
+        height:30px;
+        width: 100%;
+        float:left;
+        padding:5px;
+        margin: 0px;
+    }
+
+    label{
+
+
+        width: 80px;
+        margin-bottom: 0px;
+        margin-top: 0px;
+        padding-left: 80px;
+        font-family: verdana;
+        font-size: 100%;
+
+    }
+    #NameRecresultl{
+        float: left;
+        width: 40%;
+    }
+    #NameRecresultr{
+        float: right;
+        width: 49%;
+
+    }
+    #shortTextSimilarity{
+        margin-top: 30px
+    }
+
+
+
+
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>TestDemo</title>
+    <script type="text/javascript" src="/public/js/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="/public/js/TextSimilarity.js" charset="UTF-8"></script>
+    <script type="text/javascript" src="/public/js/NameRec.js" charset="UTF-8"></script>
+</head>
+<body>
+<div id="shortTextSimilarity">
+
+    <textarea type="text" id="shotextS1" placeholder="请输入文本" maxlength="30" rows="2" cols="48"></textarea>
+    <textarea type="text" id="shotextS2" placeholder="请输入另一段文本" maxlength="30" rows="2" cols="48"></textarea>
+    <div class="botALab">
+        <button type="button"  onclick="shortsimil()">短文本测试相似度</button>
+        <label id="STSresult"></label>
+    </div>
+</div>
+<div id="LongTextSimilarity" style="padding-top: 50px">
+    <textarea type="text" id="longtextS1" placeholder="请输入文本" rows="8" cols="48" ></textarea>
+    <textarea type="text" id="longtextS2" placeholder="请输入另一段文本" rows="8" cols="48"></textarea>
+    <div class="botALab">
+    <button type="button"  onclick="longsimil()">长文本测试相似度</button>
+        <label id="LTSresult"></label>
+    </div>
+</div>
+<div id="NameRec" style="padding-top: 50px">
+
+    <textarea type="text" id="nameinput" placeholder="请输入识别内容" rows="8" cols="48"></textarea>
+    <button type="button"  onclick="nameRec()">命名体识别</button>
+    <div id="NameRecresult">
+        <div id="sentence"></div>
+        <div id="NameRecresultl"></div><div id="NameRecresultr"></div>
+    </div>
+</div>
+</body>
+</html>
