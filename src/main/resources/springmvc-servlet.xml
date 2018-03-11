@@ -50,6 +50,13 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 
+
+    <bean id="wordVector" class="com.hankcs.hanlp.mining.word2vec.WordVectorModel">
+        <constructor-arg index="0" value="/Users/a/Desktop/data/model/hanlp-wiki-vec-zh.txt"></constructor-arg>
+    </bean>
+    <bean id="docVectorModel" class="com.hankcs.hanlp.mining.word2vec.DocVectorModel">
+        <constructor-arg ref="wordVector"></constructor-arg>
+    </bean>
     <bean id="docvector" class="com.demo.service.DocVector"></bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">

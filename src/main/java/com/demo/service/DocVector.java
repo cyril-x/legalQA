@@ -5,6 +5,7 @@ import com.demo.dao.QAEntity;
 import com.hankcs.hanlp.mining.word2vec.DocVectorModel;
 import com.hankcs.hanlp.mining.word2vec.Vector;
 import com.hankcs.hanlp.mining.word2vec.WordVectorModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,14 +19,11 @@ import java.util.ArrayList;
  */
 @Service
 public class DocVector {
-
+    @Autowired
     public DocVectorModel docVectorModel;
+    @Autowired
+    public WordVectorModel wordVectorModel;
 
-
-    public DocVector() throws IOException {
-        WordVectorModel wordVectorModel = new WordVectorModel(Constant.wiki_vec_url);
-        docVectorModel = new DocVectorModel(wordVectorModel);
-    }
     public float similarity(String sone,String stwo){
         return docVectorModel.similarity(sone,stwo);
     }
