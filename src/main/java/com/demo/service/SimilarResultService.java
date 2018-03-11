@@ -27,14 +27,14 @@ public class SimilarResultService {
     public DocVector docvector;
 
 
-    public  ArrayList<QAEntity> question;
+    public  QAEntity question;
 
 
 
 
         public JSONArray getAnswer(String queue) throws Exception {
-        if (question==null){
-            question =  similarResultDao.getQAEntity();}
+            int[] reInt = similarResultDao.getNum();
+
             JSONArray jsonArray = new JSONArray();
 
             int[] num=new int[3];
@@ -42,12 +42,15 @@ public class SimilarResultService {
             float temp=0;
             int tempnum=0;
            // System.out.println(docVectorModel.similarity("公司拖欠工资，如何要回？", "怎么要回被拖欠的工资"));
-            for (int i=0;i<question.size();i++){
+            for (int i=0;i<reInt.length;i++){
+                if (question==null){
+
+                    question =  similarResultDao.getQAEntity(reInt[i]);}
                 if(i%1000==0){
                     System.out.println(i+"ddd");
                 }
                 tempnum = i;
-               temp=docvector.similarity(queue,question.get(i).getQuestionContent());
+               temp=docvector.similarity(queue,question.getQuestionContent());
                if (temp>result[2]){
                     num[2] = tempnum;
                    result[2] = temp;
@@ -70,8 +73,8 @@ public class SimilarResultService {
             for (int i=0;i<3;i++){
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("num",num[i]);
-                jsonObject.put("questionContent",question.get(num[i]).getQuestionContent());
-                jsonObject.put("response",question.get(num[i]).getBestResponse());
+                jsonObject.put("questionContent",similarResultDao.getQAEntity(reInt[num[i]]).getQuestionContent());
+                jsonObject.put("response",similarResultDao.getQAEntity(reInt[num[i]]).getBestResponse());
                 jsonObject.put("result",result[i]);
                 jsonArray.add(jsonObject);
             }

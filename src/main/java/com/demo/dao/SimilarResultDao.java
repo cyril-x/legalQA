@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 
 public interface SimilarResultDao {
-    @Select("select * from ask_question_110 where num > 105260  ")
-    ArrayList<QAEntity> getQAEntity();
+    @Select("select * from ask_question_110 where num =#{num}")
+    QAEntity getQAEntity(@Param("num") int num);
 
     @Select("select bestResponse from ask_question_110 where num = #{num}")
     String getAnswer(int num);
@@ -20,5 +20,9 @@ public interface SimilarResultDao {
 
     @Update("update ask_question_110 set vector = #{vector} where num =#{num}")
     void setVector(@Param("num") int num,@Param("vector") String vector);
+
+    @Select("select num from ask_question_110 ")
+    int[] getNum();
+    
 
 }

@@ -107,22 +107,22 @@ public class DmInsertService {
     }
 
     public void dm() {
-        ArrayList<QAEntity> qaEntities = similarResultDao.getQAEntity();
-        int size = qaEntities.size();
+        int[] reInt = similarResultDao.getNum();
+        int size = reInt.length;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println(simpleDateFormat.format(new Date()));
         for (int i=0;i<size;i++){
-
-            String content = qaEntities.get(i).getQuestionContent().trim();
+            QAEntity qaEntity=similarResultDao.getQAEntity(reInt[i]);
+            String content = qaEntity.getQuestionContent().trim();
             if (content.equals("")){
-                content = qaEntities.get(i).getQuestionTitle();
+                content = qaEntity.getQuestionTitle();
                 if(content.equals("")){
-                    System.out.println(qaEntities.get(i).getNum());
+                    System.out.println(qaEntity.getNum());
                     System.out.println("youyigekong");
                 }
             }
 
-            similarResultDao.setDm(qaEntities.get(i).getNum(),getDm(qaEntities.get(i).getNum(),content));
+            similarResultDao.setDm(qaEntity.getNum(),getDm(qaEntity.getNum(),content));
 
         }
         System.out.println(simpleDateFormat.format(new Date()));

@@ -21,7 +21,6 @@ public class DocVector {
 
     public DocVectorModel docVectorModel;
 
-    ArrayList<QAEntity> question;
 
     public DocVector() throws IOException {
         WordVectorModel wordVectorModel = new WordVectorModel(Constant.wiki_vec_url);

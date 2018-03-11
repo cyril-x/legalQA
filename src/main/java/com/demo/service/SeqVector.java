@@ -21,7 +21,7 @@ public class SeqVector {
 
    @Autowired
     DocVector docVector;
-    public ArrayList<QAEntity> question;
+
 
 
 
@@ -49,15 +49,16 @@ public class SeqVector {
 
 
     public void insertVector() throws Exception {
-    if (question==null){
-        question =  similarResultDao.getQAEntity();}
-        int limit = question.size();
-        for (int i=0;i<limit;i++){
-            String queue = question.get(i).getQuestionContent().trim()+question.get(i).getQuestionTitle().trim();
+        int[] reInt = similarResultDao.getNum();
 
-            String vector = getSeqVector(question.get(i).getNum(),queue);
+        int limit = reInt.length;
+        for (int i=0;i<limit;i++){
+            QAEntity question = similarResultDao.getQAEntity(reInt[i]);
+            String queue = question.getQuestionContent().trim()+question.getQuestionTitle().trim();
+
+            String vector = getSeqVector(question.getNum(),queue);
            // System.out.println(vector);
-            similarResultDao.setVector(question.get(i).getNum(),vector);
+            similarResultDao.setVector(question.getNum(),vector);
 
         }
     }
