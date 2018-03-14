@@ -31,4 +31,14 @@ public class DocVector {
     public Vector query(String ss){
         return docVectorModel.query(ss);
     }
+
+    public Vector vecstrToVec(String query){
+        String[] temp = query.split("\t");
+        Vector result = new Vector(300);
+        for (int i=0;i<temp.length;i++){
+            result.elementArray[i] = Float.parseFloat(temp[i]);
+        }
+        return result;
+
+    }
 }

@@ -5,10 +5,13 @@ import com.demo.dao.SimilarResultDao;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
+
+import com.hankcs.hanlp.mining.word2vec.Vector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+
 
 /**
  * @author d-xsj
@@ -26,55 +29,79 @@ public class SimilarResultService {
     @Autowired
     public DocVector docvector;
 
-
-    public  QAEntity question;
-
-
+    @Autowired
+    public DmService dmService;
 
 
-        public JSONArray getAnswer(String queue) throws Exception {
-            int[] reInt = similarResultDao.getNum();
+
+        public JSONArray getAnswer(String query,Boolean dmif)  {
+            ArrayList<Integer> queNum;
+            ArrayList<String> vecStr;
+            int qDm = dmService.getDm(query);
+            if (dmif) {
+               queNum  = similarResultDao.getNumFromDm(qDm);
+               vecStr  = similarResultDao.getVectorFromDm(qDm);
+            }else {
+                 queNum = similarResultDao.getNumList();
+                 vecStr = similarResultDao.getVector();
+            }
 
             JSONArray jsonArray = new JSONArray();
+            int size = queNum.size();
 
             int[] num=new int[3];
             float[] result=new float[3];
+
             float temp=0;
             int tempnum=0;
-           // System.out.println(docVectorModel.similarity("公司拖欠工资，如何要回？", "怎么要回被拖欠的工资"));
-            for (int i=0;i<reInt.length;i++){
-                if (question==null){
+            Vector target = docvector.query(query);
 
-                    question =  similarResultDao.getQAEntity(reInt[i]);}
-                if(i%1000==0){
-                    System.out.println(i+"ddd");
-                }
-                tempnum = i;
-               temp=docvector.similarity(queue,question.getQuestionContent());
-               if (temp>result[2]){
+
+            for (int i=0;i<size;i++){
+                tempnum=i;
+                temp=docvector.vecstrToVec(vecStr.get(i)).cosineForUnitVector(target);
+                if (temp>result[2]){
                     num[2] = tempnum;
-                   result[2] = temp;
-                   if (temp>result[1]){
-                       result[2] = result[1];
-                       result[1] = temp;
-                       num[2] = num[1];
-                       num[1] = tempnum;
-                       if(temp>result[0]){
-                           result[1]=result[0];
-                           result[0] = temp;
-                           num[1] = num[0];
-                           num[0] = tempnum;
-                       }
-                   }
+                    result[2] = temp;
+                    if (temp>result[1]){
+                        result[2] = result[1];
+                        result[1] = temp;
+                        num[2] = num[1];
+                        num[1] = tempnum;
+                        if(temp>result[0]){
+                            result[1]=result[0];
+                            result[0] = temp;
+                            num[1] = num[0];
+                            num[0] = tempnum;
+                        }
+                    }
 
-               }
+                }
             }
-//            //System.out.println(docVectorModel.similarity("山西副省长贪污腐败开庭", "股票基金增长"));
-            for (int i=0;i<3;i++){
+            int maxsize;
+            if (size>=3){
+                maxsize =3;
+            }else {
+                maxsize = size;
+            }
+            if (size>0){
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("num",num[i]);
-                jsonObject.put("questionContent",similarResultDao.getQAEntity(reInt[num[i]]).getQuestionContent());
-                jsonObject.put("response",similarResultDao.getQAEntity(reInt[num[i]]).getBestResponse());
+                jsonObject.put("re",maxsize+1);
+                jsonArray.add(jsonObject);
+            }else {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("re",0);
+                jsonArray.add(jsonObject);
+                return jsonArray;
+            }
+
+            for (int i=0;i<maxsize;i++){
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("num",queNum.get(num[i]));
+                jsonObject.put("dm",similarResultDao.getDm(queNum.get(num[i])));
+                jsonObject.put("questionTitle",similarResultDao.getTitle(queNum.get(num[i])));
+                jsonObject.put("questionContent",similarResultDao.getContent(queNum.get(num[i])));
+                jsonObject.put("response",similarResultDao.getAnswer(queNum.get(num[i])));
                 jsonObject.put("result",result[i]);
                 jsonArray.add(jsonObject);
             }

@@ -52,12 +52,13 @@
 
 
     <bean id="wordVector" class="com.hankcs.hanlp.mining.word2vec.WordVectorModel">
-        <constructor-arg index="0" value="/Users/a/Desktop/data/model/hanlp-wiki-vec-zh.txt"></constructor-arg>
+        <constructor-arg index="0" value="/Users/a/Desktop/legalQA/data/model/hanlp-wiki-vec-zh.txt"></constructor-arg>
     </bean>
     <bean id="docVectorModel" class="com.hankcs.hanlp.mining.word2vec.DocVectorModel">
         <constructor-arg ref="wordVector"></constructor-arg>
     </bean>
     <bean id="docvector" class="com.demo.service.DocVector"></bean>
+    <bean id="dmService" class="com.demo.service.DmService"></bean>
 
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
@@ -87,10 +88,8 @@
     <bean id="stringHttpMessageConverter"
           class="org.springframework.http.converter.StringHttpMessageConverter">
         <constructor-arg value="UTF-8" index="0"></constructor-arg>
-        <property name="supportedMediaTypes">
-            <list>
-                <value>text/plain;charset=UTF-8</value>
-            </list>
+        <property name="supportedMediaTypes" value="text/plain;charset=UTF-8">
+
         </property>
     </bean>
 

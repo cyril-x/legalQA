@@ -31,7 +31,7 @@ import java.util.List;
  * Description:
  */
 @Service
-public class DmInsertService {
+public class DmService {
     @Autowired
     private  SimilarResultDao similarResultDao;
 
@@ -106,7 +106,7 @@ public class DmInsertService {
         return 0;
     }
 
-    public void dm() {
+    public void setDm() {
         int[] reInt = similarResultDao.getNum();
         int size = reInt.length;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -126,5 +126,9 @@ public class DmInsertService {
 
         }
         System.out.println(simpleDateFormat.format(new Date()));
+    }
+
+    public int getDm(String query){
+       return getDm(0,query);
     }
 }

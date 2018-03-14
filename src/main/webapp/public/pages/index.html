@@ -1,28 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
     <script type="text/javascript" src="/public/js/jquery-3.1.1.js"></script>
     <script type="text/javascript" src="/public/js/QAFind.js"></script>
     <style type="text/css">
         table{
-            border:#00ffff solid 2px;
+            width:100%;
             border-collapse:collapse;
         }
-        td{
-            border:#8080ff solid 2px;
-            padding:10px;
+        tr{
+            width: 100%;
         }
+        td{
+            border:black solid 1px;
+            padding:10px;
+            font-size:12px;
+        }
+        .input{
+            border:black solid 1px;
+            width: 100%;
+            overflow: auto;
+            word-break: break-all;
+            text-align: center;
+            margin: 0 auto;
+            font-size: 16px;
+
+        }
+        .answerbot{
+            width:100%;
+            margin:0 auto;
+        }
+        .btn{
+            margin-left:81%;
+            background-color: peachpuff;
+        }
+
     </style>
-    <meta charset="UTF-8">
+
     <title>问答系统</title>
 </head>
 <body>
-<div id="answerplain">
+<div id="answerplain" class="all">
 
-    <textarea type="text" id="queuetext" placeholder="请输入问题" maxlength="30" rows="2" cols="48"></textarea>
+    <textarea type="text" class="input" id="queuetext" placeholder="请输入问题"  rows="10" cols="50"></textarea>
+    <input type="checkbox" id="dm_classify" value="">是否案情分类</input>
+    <button type="button" class="btn" onclick="findAnswer()">回答</button>
+    <div class="answerbot" >
 
-    <div class="answerbot">
-        <button type="button"  onclick="findAnswer()">回答</button>
         <label id="answer"></label>
     </div>
 </div>
