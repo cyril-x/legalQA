@@ -7,5 +7,6 @@ package com.demo.constant;
  * Description:
  */
 public class Constant {
-    public static String wiki_vec_url = "/Users/a/Desktop/data/model/hanlp-wiki-vec-zh.txt";
+    public static String wiki_mac_url = "/Users/a/Desktop/data/model/hanlp-wiki-vec-zh.txt";
+    public static String wiki_win_url = "C:\\Users\\xsj\\IdeaProjects\\legalQA\\data\\model\\hanlp-wiki-vec-zh.txt";
 }

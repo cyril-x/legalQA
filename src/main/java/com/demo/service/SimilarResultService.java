@@ -36,14 +36,14 @@ public class SimilarResultService {
 
         public JSONArray getAnswer(String query,Boolean dmif)  {
             ArrayList<Integer> queNum;
-            ArrayList<String> vecStr;
+
             int qDm = dmService.getDm(query);
             if (dmif) {
                queNum  = similarResultDao.getNumFromDm(qDm);
-               vecStr  = similarResultDao.getVectorFromDm(qDm);
+
             }else {
                  queNum = similarResultDao.getNumList();
-                 vecStr = similarResultDao.getVector();
+
             }
 
             JSONArray jsonArray = new JSONArray();
@@ -59,7 +59,11 @@ public class SimilarResultService {
 
             for (int i=0;i<size;i++){
                 tempnum=i;
-                temp=docvector.vecstrToVec(vecStr.get(i)).cosineForUnitVector(target);
+                String vector = similarResultDao.getVecFromNum(queNum.get(i));
+                if (vector.equals("")){
+                    System.out.println(queNum.get(i));
+                    continue;}
+                temp=docvector.vecstrToVec(vector).cosineForUnitVector(target);
                 if (temp>result[2]){
                     num[2] = tempnum;
                     result[2] = temp;

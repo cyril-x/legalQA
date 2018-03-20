@@ -79,12 +79,12 @@ public class DmService {
                 else if(minshi.get("labels")!=null&&xingshi.get("labels")==null){
                     JSONArray minshiarray = JSONObject.parseArray(minshi.get("labels").toString());
                     int minshidm = Integer.parseInt(minshiarray.getJSONObject(0).get("DM").toString());
-                    System.out.println(minshiarray.getJSONObject(0).get("prob"));
+                    //System.out.println(minshiarray.getJSONObject(0).get("prob"));
                     return minshidm;
                 }else if(minshi.get("labels")==null&&xingshi.get("labels")!=null){
                     JSONArray xingshiarray = JSONObject.parseArray(xingshi.get("labels").toString());
                     int xingshidm = Integer.parseInt(xingshiarray.getJSONObject(0).get("DM").toString());
-                    System.out.println(xingshiarray.getJSONObject(0).get("prob"));
+                   // System.out.println(xingshiarray.getJSONObject(0).get("prob"));
                     return xingshidm;
                 }else {
                     return 0;

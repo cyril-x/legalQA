@@ -10,6 +10,7 @@ function findAnswer() {
         $.ajax({
             url: "/queandan.do",
             data: conten,
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
             type: "GET",
             success: function (data) {
                 document.getElementById("answer").innerHTML = "";

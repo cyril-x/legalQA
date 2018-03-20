@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author d-xsj
@@ -32,9 +35,14 @@ public class LegalQAController {
     @RequestMapping(value = "/queandan.do",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public JSONArray QAController(String input,boolean dm) throws Exception {
        // String queue = httpServletRequest.getParameter("input");
-        URLDecoder.decode(input,"UTF-8");
+
+        //URLDecoder.decode(input,"UTF-8");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println(simpleDateFormat.format(new Date()));
         System.out.println(dm);
-        return similarResultService.getAnswer(input,dm);
+        JSONArray re =  similarResultService.getAnswer(input,dm);
+        System.out.println(simpleDateFormat.format(new Date()));
+        return re;
     }
 
     @RequestMapping(value = "/setdm.do")
