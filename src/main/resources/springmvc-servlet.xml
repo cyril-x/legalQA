@@ -14,85 +14,42 @@
        http://www.springframework.org/schema/tx/spring-tx.xsd
         ">
 
-    <context:component-scan base-package="com.demo" />
-    <context:annotation-config />
-    <mvc:annotation-driven/>
 
 
 
     <mvc:resources mapping="/**" location="/" cache-period="31556926" />
     <mvc:resources mapping="/public/**" location="/public/" cache-period="36" />
 
-    <!--引入配置文件-->
-    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:jdbc.properties"></property>
-    </bean>
 
-    <!--数据库连接池配置-->
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-        <property name="driverClassName" value="${jdbc.driverClassName}"/>
-        <property name="url" value="${jdbc.url}"/>
-        <property name="username" value="${jdbc.username}"/>
-        <property name="password" value="${jdbc.password}"/>
-    </bean>
-    <!--不需要mybits的配置映射文件，将Spring和mybatis整合-->
-    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <bean id="QAMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
-        <property name="mapperInterface" value="com.demo.dao.SimilarResultDao"/>
-        <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
-    </bean>
-    <!--自动扫描包下边的接口，并实现-->
-    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com/demo/dao/"/>
-        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
-    </bean>
-
-
-    <bean id="wordVector" class="com.hankcs.hanlp.mining.word2vec.WordVectorModel">
-        <constructor-arg index="0" value="C:\\Users\\xsj\\IdeaProjects\\legalQA\\data\\model\\hanlp-wiki-vec-zh.txt"></constructor-arg>
-    </bean>
-    <bean id="docVectorModel" class="com.hankcs.hanlp.mining.word2vec.DocVectorModel">
-        <constructor-arg ref="wordVector"></constructor-arg>
-    </bean>
-    <bean id="docvector" class="com.demo.service.DocVector"></bean>
-    <bean id="dmService" class="com.demo.service.DmService"></bean>
-    <bean id="ltpquery" class="com.demo.service.LTPService"></bean>
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <tx:annotation-driven transaction-manager="transactionManager"/>
-
-    <bean id="mappingJacksonHttpMessageConverter"
-          class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
-        <property name="supportedMediaTypes">
-            <list>
-                <value>text/html;charset=UTF-8</value>
-            </list>
+    <bean id="freemarkerConfig"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/public/pages/" />
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="template_update_delay">0</prop>
+                <prop key="default_encoding">UTF-8</prop>
+                <prop key="number_format">0.##########</prop>
+                <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+                <prop key="classic_compatible">true</prop>
+                <prop key="template_exception_handler">ignore</prop>
+            </props>
         </property>
     </bean>
-
-    <!-- 启动SpringMVC的注解功能，完成请求和注解POJO的映射 -->
-    <bean
-            class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
-        <property name="messageConverters">
-            <list>
-                <!-- json转换器 -->
-                <ref bean="mappingJacksonHttpMessageConverter" />
-            </list>
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="exposeRequestAttributes" value="true" />
+        <property name="exposeSessionAttributes" value="true" />
+        <property name="viewClass">
+            <value>org.springframework.web.servlet.view.freemarker.FreeMarkerView</value>
+        </property>
+        <property name="cache"><value>true</value></property>
+        <!--这里需要注意一下，我注释了下面这样一行代码，这行代码的意思就是指引freemarker需要解析的文件的位置。注释掉原因是因为
+         applicationContext.xml里有这样一行代码：<property name="templateLoaderPath" value="/WEB-INF/views/" /> 已经指定了视图位置。如果我们这里依然保留下方代码，页面回报406的找不到的错误 -->
+        <!--<property name="prefix"><value>/WEB-INF/views/</value></property>-->
+        <property name="suffix"><value>.html</value></property>
+        <property name="contentType">
+            <value>text/html; charset=UTF-8</value>
         </property>
     </bean>
-    <bean id="stringHttpMessageConverter"
-          class="org.springframework.http.converter.StringHttpMessageConverter">
-        <constructor-arg value="UTF-8" index="0"></constructor-arg>
-        <property name="supportedMediaTypes" value="text/plain;charset=UTF-8">
-
-        </property>
-    </bean>
-
 
 
 

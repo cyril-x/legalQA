@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="/public/js/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="/public/js/compare.js"></script>
+    <title>Dsp VS Word2Vec</title>
+    <style type="text/css">
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+        tr{
+            width: 100%;
+        }
+        td{
+            border:black solid 1px;
+            padding:10px;
+            font-size:12px;
+        }
+        .input{
+            border:black solid 1px;
+            width: 100%;
+            overflow: auto;
+            word-break: break-all;
+            text-align: center;
+            margin: 0 auto;
+            font-size: 16px;
+
+        }
+    </style>
+</head>
+<body>
+<textarea type="text" class="input" id="string1" placeholder="请输入问题"  rows="10" cols="50"></textarea>
+<textarea type="text" class="input" id="string2" placeholder="请输入问题"  rows="10" cols="50"></textarea>
+<button id="compare" onclick="compare()">查看相似度</button>
+<label id="result"></label>
+
+</body>
+</html>

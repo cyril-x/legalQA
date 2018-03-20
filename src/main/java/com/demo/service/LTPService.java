@@ -13,14 +13,13 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.stereotype.Service;
-
-import javax.xml.ws.ServiceMode;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 @Service
 public class LTPService {
+
     String url="https://api.ltp-cloud.com/analysis/";
     String api_key="G1t7R2i3z56G9Z5G7oKFfoHTvXEClXWPFYWRAFWd";
 

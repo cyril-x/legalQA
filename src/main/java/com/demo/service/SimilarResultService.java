@@ -1,11 +1,10 @@
 package com.demo.service;
 
-import com.demo.dao.QAEntity;
-import com.demo.dao.SimilarResultDao;
-
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 
+import com.alibaba.fastjson.JSONPObject;
+import com.demo.dao.SimilarResultDao;
 import com.hankcs.hanlp.mining.word2vec.Vector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 public class SimilarResultService {
 
     @Autowired
-    public   SimilarResultDao similarResultDao;
+    public SimilarResultDao similarResultDao;
 
     @Autowired
     public DocVector docvector;
@@ -32,7 +31,8 @@ public class SimilarResultService {
     @Autowired
     public DmService dmService;
 
-
+    @Autowired
+    public DspSimilarService dspsimilarService;
 
         public JSONArray getAnswer(String query,Boolean dmif)  {
             ArrayList<Integer> queNum;
@@ -114,7 +114,29 @@ public class SimilarResultService {
         }
 
 
+    public float getSdpSimilarity(String s1,String s2){
+            return dspsimilarService.getSimilarity(s1,s2);
+    }
 
+    public float getWord2VecSimilarity(String s1,String s2){
+        float m ;
+        Vector v1 = docvector.query(s1);
+        Vector v2 = docvector.query(s2);
+
+        if (v1==null||v2==null){
+            m=0;
+        }else {
+            return v1.cosineForUnitVector(v2);
+        }
+        return m;
+    }
+
+    public JSONObject getCompareRe(String s1, String s2){
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("sdp",getSdpSimilarity(s1,s2));
+        jsonObject.put("vec",getWord2VecSimilarity(s1,s2));
+        return  jsonObject;
+    }
 
 
 }

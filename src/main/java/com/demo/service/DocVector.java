@@ -19,6 +19,7 @@ import java.util.ArrayList;
  */
 @Service
 public class DocVector {
+
     @Autowired
     public DocVectorModel docVectorModel;
     @Autowired
