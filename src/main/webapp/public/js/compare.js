@@ -21,8 +21,27 @@ function  compare() {
                 var reRow = table.insertRow();
                 var vecRe = reRow.insertCell();
                 var sdpRe = reRow.insertCell();
+                var reI = table.insertRow();
+                var reIAll = reI.insertCell();
+                var reIcheck = reI.insertCell();
+                var reII = table.insertRow();
+                var reIIAll = reII.insertCell();
+                var reIIcheck = reII.insertCell();
                 vecRe.innerHTML=data["vec"];
                 sdpRe.innerHTML=data["sdp"];
+                for(var i=0;i<data["queryI"].length;i++){
+                    reIcheck.innerHTML+=data["queryI"][i]+"<br>";
+                }
+                for(var i=0;i<data["queryII"].length;i++){
+                    reIIcheck.innerHTML+=data["queryII"][i]+"<br>";
+                }
+
+                for(var i=0;i<data["queryIAll"].length;i++){
+                   reIAll.innerHTML+=data["queryIAll"][i]+"<br>";
+                }
+                for(var i=0;i<data["queryIIAll"].length;i++){
+                    reIIAll.innerHTML+=data["queryIIAll"][i]+"<br>";
+                }
                 document.getElementById("result").appendChild(table);
             }
         })

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -30,6 +31,9 @@ public class SimilarResultService {
 
     @Autowired
     public DmService dmService;
+
+    @Autowired
+    public LTPService ltpService;
 
     @Autowired
     public DspSimilarService dspsimilarService;
@@ -135,6 +139,14 @@ public class SimilarResultService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("sdp",getSdpSimilarity(s1,s2));
         jsonObject.put("vec",getWord2VecSimilarity(s1,s2));
+        String[] queryI = dspsimilarService.getSArrray(dspsimilarService.answerI);
+        String[] queryII = dspsimilarService.getSArrray(dspsimilarService.answerII);
+        jsonObject.put("queryIAll",dspsimilarService.getSdpAnalys(s1).split("\n"));
+        jsonObject.put("queryIIAll",dspsimilarService.getSdpAnalys(s2).split("\n"));
+        jsonObject.put("queryI",queryI);
+        jsonObject.put("queryII",queryII);
+
+
         return  jsonObject;
     }
 
