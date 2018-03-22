@@ -39,14 +39,14 @@ public class LegalQAController {
 
     @ResponseBody
     @RequestMapping(value = "/queandan.do",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
-    public JSONArray QAController(String input,boolean dm) throws Exception {
+    public JSONArray QAController(String input,boolean dm,boolean sdpif) throws Exception {
        // String queue = httpServletRequest.getParameter("input");
 
         //URLDecoder.decode(input,"UTF-8");
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println(simpleDateFormat.format(new Date()));
         System.out.println(dm);
-        JSONArray re =  similarResultService.getAnswer(input,dm);
+        JSONArray re =  similarResultService.getAnswer(input,dm,sdpif);
         System.out.println(simpleDateFormat.format(new Date()));
         return re;
     }

@@ -1,10 +1,12 @@
 function findAnswer() {
     var inputdata = document.getElementById("queuetext").value;
     var dmif = $("#dm_classify").prop("checked");
+    var sdpif = $("#sdp_if").prop("checked");
     if (inputdata!=null&&inputdata!="") {
         var conten = {
             "input": inputdata,
             "dm":dmif,
+            "sdp":sdpif,
         }
 
         $.ajax({

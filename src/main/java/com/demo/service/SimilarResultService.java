@@ -38,7 +38,7 @@ public class SimilarResultService {
     @Autowired
     public DspSimilarService dspsimilarService;
 
-        public JSONArray getAnswer(String query,Boolean dmif)  {
+        public JSONArray getAnswer(String query,Boolean dmif,Boolean sdpif)  {
             ArrayList<Integer> queNum;
 
             int qDm = dmService.getDm(query);
