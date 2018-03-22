@@ -5,10 +5,7 @@ import com.demo.util.VecCal;
 import com.hankcs.hanlp.mining.word2vec.WordVectorModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class DspSimilarService {
 
@@ -16,7 +13,11 @@ public class DspSimilarService {
 
     public ArrayList<String> que_coreI = new ArrayList<String>();
     public ArrayList<String> que_coreII = new ArrayList<String>();
-
+    /*
+    * 记录将句子分解后的，每个语段的语法树
+    * */
+    public Map<String,String> sentenceI = new HashMap<String, String>();
+    public Map<String,String> sentenceII = new HashMap<String,String>();
 
     @Autowired
     public LTPService ltpService;
@@ -33,9 +34,18 @@ public class DspSimilarService {
 
     public float getSdpSimilarity(String queryI,String queryII){
         float result=0;
-        String answerI = ltpService.getResult("sdp","plain",queryI);
-        String answerII = ltpService.getResult("sdp","plain",queryII);
-        result=calDspVec(answerI,answerII);
+        String answerI;
+        if (sentenceI.containsKey(queryI))
+         answerI = sentenceI.get(queryI);
+        else
+         answerI =  ltpService.getResult("sdp","plain",queryI);
+
+        String answerII;
+        if (sentenceII.containsKey(queryII))
+            answerII=sentenceII.get(queryII);
+        else
+            answerII=ltpService.getResult("sdp","plain",queryII);
+            result=calDspVec(answerI,answerII);
         return result;
     }
 
@@ -112,6 +122,7 @@ public class DspSimilarService {
     public String[] getSArrray(String answer){
         String root = getRoot(answer);
         if(root.equals("can't find root")){
+            System.out.println(answer+"can't find root");
             return null;
         }
         String[] s1 = getSdpSeq(answer);
@@ -181,6 +192,7 @@ public class DspSimilarService {
                 }
             }
         }
+        re.add(root.split("_")[0]);
 
         return  (String[]) re.toArray(new String[re.size()]);
     }
@@ -188,6 +200,8 @@ public class DspSimilarService {
     public float clauseRe(String s1,String s2){
         que_coreI.clear();
         que_coreII.clear();
+        sentenceII.clear();
+        sentenceI.clear();
         float re=0;
         int count=0;
         String[] s1clause = s1.split("\\,|\\，|\\.|\\。|\\;|\\；|\\?|\\？");
@@ -198,7 +212,11 @@ public class DspSimilarService {
         for (int i=0;i<size1;i++){
             for (int j=0;j<size2;j++){
                 VecCell vecCell = new VecCell();
-                vecCell.setKey(getSdpSimilarity(s1clause[i],s2clause[j]));
+                float temp = getSdpSimilarity(s1clause[i],s2clause[j]);
+                if (Float.isNaN(temp)||Float.isInfinite(temp)){
+                    vecCell.setKey(0);
+                }else {
+                vecCell.setKey(temp);}
                 vecCell.setX(i);
                 vecCell.setY(j);
                 list.add(vecCell);
@@ -212,7 +230,8 @@ public class DspSimilarService {
             count++;
 
         }
-        return re/count;
+        float alpha = size1<size2?(float) (size1+size2)/(2*size2):(float) (size1+size2)/(2*size1);
+        return re/count * alpha ;
     }
 
 
