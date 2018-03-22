@@ -119,7 +119,7 @@ public class SimilarResultService {
 
 
     public float getSdpSimilarity(String s1,String s2){
-            return dspsimilarService.getSimilarity(s1,s2);
+            return dspsimilarService.getSdpSimilarity(s1,s2);
     }
 
     public float getWord2VecSimilarity(String s1,String s2){
@@ -136,11 +136,12 @@ public class SimilarResultService {
     }
 
     public JSONObject getCompareRe(String s1, String s2){
+
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("sdp",getSdpSimilarity(s1,s2));
+        jsonObject.put("sdp",dspsimilarService.clauseRe(s1,s2));
         jsonObject.put("vec",getWord2VecSimilarity(s1,s2));
-        String[] queryI = dspsimilarService.getSArrray(dspsimilarService.answerI);
-        String[] queryII = dspsimilarService.getSArrray(dspsimilarService.answerII);
+        ArrayList<String> queryI = dspsimilarService.que_coreI;
+        ArrayList<String> queryII = dspsimilarService.que_coreII;
         jsonObject.put("queryIAll",dspsimilarService.getSdpAnalys(s1).split("\n"));
         jsonObject.put("queryIIAll",dspsimilarService.getSdpAnalys(s2).split("\n"));
         jsonObject.put("queryI",queryI);

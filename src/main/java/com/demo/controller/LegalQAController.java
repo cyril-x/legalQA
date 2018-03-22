@@ -19,6 +19,8 @@ import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author d-xsj
@@ -60,10 +62,14 @@ public class LegalQAController {
     @ResponseBody
     @RequestMapping(value = "/simCompare.do",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public JSONObject Compare(String s1, String s2){
-        System.out.println(s1);
-        s1=s1.replace("\n|\t| ","");
-        s2=s2.replace("\n|\t| ","");
-        return similarResultService.getCompareRe(s1,s2);
+        String ss1 = "";
+        String ss2 = "";
+        Pattern p = Pattern.compile("\\s*|\t|\n|\r");
+        Matcher m1 = p.matcher(s1);
+        Matcher m2 = p.matcher(s2);
+        ss1 = m1.replaceAll("");
+        ss2 = m2.replaceAll("");
+        return similarResultService.getCompareRe(ss1,ss2);
     }
 
     @RequestMapping(value = "/compare")

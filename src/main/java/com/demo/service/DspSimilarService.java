@@ -14,8 +14,9 @@ public class DspSimilarService {
 
     public List<List<String>> reList= new ArrayList<List<String>>();
 
-    public String answerI;
-    public String answerII;
+    public ArrayList<String> que_coreI = new ArrayList<String>();
+    public ArrayList<String> que_coreII = new ArrayList<String>();
+
 
     @Autowired
     public LTPService ltpService;
@@ -30,10 +31,10 @@ public class DspSimilarService {
         reList.add(new ArrayList<String>());
     }
 
-    public float getSimilarity(String queryI,String queryII){
+    public float getSdpSimilarity(String queryI,String queryII){
         float result=0;
-        answerI = ltpService.getResult("sdp","plain",queryI);
-        answerII = ltpService.getResult("sdp","plain",queryII);
+        String answerI = ltpService.getResult("sdp","plain",queryI);
+        String answerII = ltpService.getResult("sdp","plain",queryII);
         result=calDspVec(answerI,answerII);
         return result;
     }
@@ -52,9 +53,12 @@ public class DspSimilarService {
         String[] term = seq.split(" ");
         return term;
     }
-
-    private String getRoot(String query){
-        String[] seq=getSdpSeq(query);
+    /*
+    * 输入 语义分析结果的数组的String，返回Root
+    *
+    * */
+    private String getRoot(String answer){
+        String[] seq=getSdpSeq(answer);
         String m="can't find root";
         for (int i=0;i<seq.length;i++){
             String[] temp = getSdpTerm(seq[i]);
@@ -65,17 +69,22 @@ public class DspSimilarService {
         return m;
     }
 
-    public float cal(String queryI,String queryII){
+    /*
+    *
+    * 第一次de计算方法，只找与 root关系相同的序列进行比对
+    * */
+
+    public float cal(String answer_queI,String answer_queII){
         reList.get(0).clear();
         reList.get(1).clear();
         int count=0;
-       String rootI =  getRoot(queryI);
-       String rootII = getRoot(queryII);
+       String rootI =  getRoot(answer_queI);
+       String rootII = getRoot(answer_queII);
        if (rootI.equals("can't find root")||rootII.equals("can't find root")){
            return 0;
        }
-       String[] s1 = getSdpSeq(queryI);
-       String[] s2 = getSdpSeq(queryII);
+       String[] s1 = getSdpSeq(answer_queI);
+       String[] s2 = getSdpSeq(answer_queII);
         float re = 0;
        for (String t1: s1){
            for (String t2:s2){
@@ -96,15 +105,25 @@ public class DspSimilarService {
 
     }
 
-    public String[] getSArrray(String query){
-        String root = getRoot(query);
+    /*
+    * 输入语义分析后数组的String，得到与Root相关联的String[]
+    *
+    * */
+    public String[] getSArrray(String answer){
+        String root = getRoot(answer);
         if(root.equals("can't find root")){
             return null;
         }
-        String[] s1 = getSdpSeq(query);
+        String[] s1 = getSdpSeq(answer);
         return  getTermFromSeq(s1,root);
     }
 
+
+    /*
+    * 输入为语义分析后数组的String
+    * 计算 两个关键矩阵的相似度
+    *
+    * */
     public float calDspVec(String queryI,String queryII){
         float re = 0;
         int count=0;
@@ -113,6 +132,14 @@ public class DspSimilarService {
         String[] s2Vec = getSArrray(queryII);
         if(s1Vec==null||s2Vec==null){
             return 0;
+        }
+        for (String s:s1Vec){
+            if (!que_coreI.contains(s)){
+            que_coreI.add(s);}
+        }
+        for (String s:s2Vec){
+            if (!que_coreII.contains(s)){
+            que_coreII.add(s);}
         }
         float[][] calVec = new float[s1Vec.length][s2Vec.length];
         ArrayList<VecCell> list = new ArrayList<VecCell>();
@@ -127,7 +154,6 @@ public class DspSimilarService {
             }
         }
         Collections.sort(list);
-        System.out.println(list);
 
         while (!list.isEmpty()){
 
@@ -139,6 +165,9 @@ public class DspSimilarService {
         return re/count;
     }
 
+    /*
+    * 根据语义列表 A_1 B_2 Root 和Root，寻找与root有关的成分
+    * */
     private String[] getTermFromSeq(String[] answer,String root){
 
         ArrayList<String> re = new ArrayList<String>();
@@ -154,6 +183,36 @@ public class DspSimilarService {
         }
 
         return  (String[]) re.toArray(new String[re.size()]);
+    }
+
+    public float clauseRe(String s1,String s2){
+        que_coreI.clear();
+        que_coreII.clear();
+        float re=0;
+        int count=0;
+        String[] s1clause = s1.split("\\,|\\，|\\.|\\。|\\;|\\；|\\?|\\？");
+        String[] s2clause = s2.split("\\,|\\，|\\.|\\。|\\;|\\；|\\?|\\？");
+        ArrayList<VecCell> list = new ArrayList<VecCell>();
+        int size1 = s1clause.length;
+        int size2 = s2clause.length;
+        for (int i=0;i<size1;i++){
+            for (int j=0;j<size2;j++){
+                VecCell vecCell = new VecCell();
+                vecCell.setKey(getSdpSimilarity(s1clause[i],s2clause[j]));
+                vecCell.setX(i);
+                vecCell.setY(j);
+                list.add(vecCell);
+            }
+        }
+        Collections.sort(list);
+
+        while (!list.isEmpty()){
+
+            re+= vecCal.getMaxClearXY(list);
+            count++;
+
+        }
+        return re/count;
     }
 
 
