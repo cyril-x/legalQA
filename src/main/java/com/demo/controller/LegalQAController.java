@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONPObject;
 import com.demo.service.DmService;
+import com.demo.service.SdpService;
 import com.demo.service.SeqVector;
 import com.demo.service.SimilarResultService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,9 @@ public class LegalQAController {
     @Autowired
     private SeqVector seqVector;
 
+    @Autowired
+    private SdpService sdpService;
+
     @ResponseBody
     @RequestMapping(value = "/queandan.do",method = RequestMethod.GET,produces = {"application/json;charset=utf-8"})
     public JSONArray QAController(String input,boolean dm,boolean sdpif) throws Exception {
@@ -55,6 +59,9 @@ public class LegalQAController {
     public void getDmController(){
         dmService.setDm();
     }
+
+    @RequestMapping(value = "/setsdp.do")
+    public void getSdpController(){sdpService.insertSdpRe();}
 
     @RequestMapping(value = "/getVector.do")
     public void getVectorController() throws Exception {seqVector.insertVector(); }

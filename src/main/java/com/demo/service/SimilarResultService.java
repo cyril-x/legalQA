@@ -3,14 +3,13 @@ package com.demo.service;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.JSONArray;
 
-import com.alibaba.fastjson.JSONPObject;
 import com.demo.dao.SimilarResultDao;
+import com.demo.object.NumScore;
 import com.hankcs.hanlp.mining.word2vec.Vector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -36,7 +35,7 @@ public class SimilarResultService {
     public LTPService ltpService;
 
     @Autowired
-    public DspSimilarService dspsimilarService;
+    public SdpSimilarService dspsimilarService;
 
         public JSONArray getAnswer(String query,Boolean dmif,Boolean sdpif)  {
             ArrayList<Integer> queNum;
@@ -52,7 +51,12 @@ public class SimilarResultService {
 
             JSONArray jsonArray = new JSONArray();
             int size = queNum.size();
-
+            ArrayList<NumScore> relist;
+            if (sdpif){
+                relist = getSdpNumScore(queNum,query);
+            }else {
+                relist= getWord2VecNumScore(queNum,query);
+            }
             int[] num=new int[3];
             float[] result=new float[3];
 
@@ -60,32 +64,6 @@ public class SimilarResultService {
             int tempnum=0;
             Vector target = docvector.query(query);
 
-
-            for (int i=0;i<size;i++){
-                tempnum=i;
-                String vector = similarResultDao.getVecFromNum(queNum.get(i));
-                if (vector.equals("")){
-                    System.out.println(queNum.get(i));
-                    continue;}
-                temp=docvector.vecstrToVec(vector).cosineForUnitVector(target);
-                if (temp>result[2]){
-                    num[2] = tempnum;
-                    result[2] = temp;
-                    if (temp>result[1]){
-                        result[2] = result[1];
-                        result[1] = temp;
-                        num[2] = num[1];
-                        num[1] = tempnum;
-                        if(temp>result[0]){
-                            result[1]=result[0];
-                            result[0] = temp;
-                            num[1] = num[0];
-                            num[0] = tempnum;
-                        }
-                    }
-
-                }
-            }
             int maxsize;
             if (size>=3){
                 maxsize =3;
@@ -120,6 +98,38 @@ public class SimilarResultService {
 
     public float getSdpSimilarity(String s1,String s2){
             return dspsimilarService.getSdpSimilarity(s1,s2);
+    }
+
+    public ArrayList<NumScore> getWord2VecNumScore( ArrayList<Integer> list, String query){
+        ArrayList<NumScore> re = new ArrayList<NumScore>();
+        Vector target = docvector.query(query);
+        int size = list.size();
+        for (int i=0;i<size;i++){
+            String vector = similarResultDao.getVecFromNum(list.get(i));
+            if (vector.equals("")){
+                System.out.println(list.get(i));
+                continue;}
+           float temp=docvector.vecstrToVec(vector).cosineForUnitVector(target);
+            NumScore ns = new NumScore(list.get(i));
+            ns.setScore(temp);
+            synchronized (re){
+            if (!re.contains(ns))
+                re.add(ns);
+            }
+        }
+        return re;
+    }
+
+    public ArrayList<NumScore> getSdpNumScore(ArrayList<Integer> list, String query){
+        ArrayList<NumScore> re = new ArrayList<NumScore>();
+        int size = list.size();
+        for (int i=0;i<size;i++){
+            String quetemp= similarResultDao.getContent(list.get(i))+similarResultDao.getTitle(list.get(i));
+            //TODO 未完待续。。。先把结果插入到数据库的。。。。。
+        }
+
+
+        return  re;
     }
 
     public float getWord2VecSimilarity(String s1,String s2){

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-public class DspSimilarService {
+public class SdpSimilarService {
 
     public List<List<String>> reList= new ArrayList<List<String>>();
 
@@ -27,7 +27,7 @@ public class DspSimilarService {
 
     private VecCal vecCal = new VecCal();
 
-    public  DspSimilarService(){
+    public SdpSimilarService(){
         reList.add(new ArrayList<String>());
         reList.add(new ArrayList<String>());
     }
