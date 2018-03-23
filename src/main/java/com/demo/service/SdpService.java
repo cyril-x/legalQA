@@ -55,11 +55,11 @@ public class SdpService {
         ss1 = m1.replaceAll("");
         String[] s1clause = ss1.split("\\,|\\，|\\.|\\。|\\;|\\；|\\?|\\？");
         for (int i=0;i<s1clause.length;i++){
-            if (!s1clause[i].equals("")) {
+            if (!s1clause[i].equals("")&&s1clause[i]!=null) {
                 String re1 = ltpService.getResult("sdp", "plain", s1clause[i]);
                 String[] reArray = sdpSimilarService.getSArrray(re1);
                 re.add(reArray);
-            }
+            }else continue;
         }
         return re;
     }
