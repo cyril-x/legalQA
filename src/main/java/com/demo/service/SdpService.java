@@ -40,30 +40,36 @@ public class SdpService {
         for (int i=0;i<size;i++){
             String[] tar = answer.get(i);
             for (String s:tar){
-                stringBuilder.append(s+"@");
+                if (!s.equals(tar[tar.length-1])){
+                stringBuilder.append(s+"@");}else {
+                    stringBuilder.append(s);
+                }
             }
             stringBuilder.append("##");
         }
         return stringBuilder.toString();
     }
 
-
     public List<String[]> handleQuery(String s){
         List<String[]> re = new ArrayList<String[]>();
-        String ss1 = "";
+        String ss1 ;
         Pattern p = Pattern.compile("\\s*|\t|\n|\r");
         Matcher m1 = p.matcher(s);
         ss1 = m1.replaceAll("");
-        String[] s1clause = ss1.split("\\,|\\，|\\.|\\。|\\;|\\；|\\?|\\？");
+        String[] s1clause = ss1.split("\\,+|\\，+|\\.+|\\。+|\\;+|\\；+|\\?+|\\？+");
         for (int i=0;i<s1clause.length;i++){
             if (!s1clause[i].equals("")&&s1clause[i]!=null) {
                 String re1 = ltpService.getResult("sdp", "plain", s1clause[i]);
+                if (re1.equals("")||re1==null){
+                    continue;
+                }
                 String[] reArray = sdpSimilarService.getSArrray(re1);
                 re.add(reArray);
             }else continue;
         }
         return re;
     }
+
 
     public void insertSdpRe(){
             numlist = similarResultDao.getNumList();
@@ -108,13 +114,13 @@ public class SdpService {
                         System.out.println(tepInt+"begin");
                         it.notifyAll();
                     }
-                    String s = similarResultDao.getContent(tepInt) + similarResultDao.getTitle(tepInt);
+                    String s = similarResultDao.getContent(tepInt) + "."+similarResultDao.getTitle(tepInt);
                     List<String[]> tep = handleQuery(s);
                     String re = saveSdpRe(tep);
                     similarResultDao.insertSdpRe(re, tepInt);
                     System.out.println(tepInt+"inserted");
                     try {
-                        Thread.currentThread().sleep(200);
+                        Thread.currentThread().sleep(20);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -123,5 +129,15 @@ public class SdpService {
                 downLatch.countDown();
             System.out.println(this.name+"finish");
         }
+    }
+
+    public void checkout(){
+        int tepInt =  1473;
+        String s = similarResultDao.getContent(tepInt) + similarResultDao.getTitle(tepInt);
+        String s2=s.replace("\\n","");
+        List<String[]> tep = handleQuery(s2);
+        String re = saveSdpRe(tep);
+        similarResultDao.insertSdpRe(re, tepInt);
+        System.out.println(tepInt+"inserted");
     }
 }

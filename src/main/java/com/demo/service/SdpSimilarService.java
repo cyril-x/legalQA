@@ -55,7 +55,12 @@ public class SdpSimilarService {
 
 
     private String[] getSdpSeq(String answer){
-        String[] re = answer.split("\n");
+        String[] re =null;
+        try{
+         re = answer.split("\n");
+        }catch (NullPointerException e){
+            System.out.println(answer);
+        }
         return re;
     }
 
@@ -69,7 +74,9 @@ public class SdpSimilarService {
     * */
     private String getRoot(String answer){
         String[] seq=getSdpSeq(answer);
-        String m="can't find root";
+        String m ="can't find root";
+        if (seq==null){
+         m="can't find root";}
         for (int i=0;i<seq.length;i++){
             String[] temp = getSdpTerm(seq[i]);
             if (temp[2].equals("Root")){
