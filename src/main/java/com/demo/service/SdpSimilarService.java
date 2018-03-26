@@ -55,7 +55,12 @@ public class SdpSimilarService {
 
 
     private String[] getSdpSeq(String answer){
-        String[] re = answer.split("\n");
+        String[] re =null;
+        try{
+         re = answer.split("\n");
+        }catch (NullPointerException e){
+            System.out.println(answer);
+        }
         return re;
     }
 
@@ -69,7 +74,9 @@ public class SdpSimilarService {
     * */
     private String getRoot(String answer){
         String[] seq=getSdpSeq(answer);
-        String m="can't find root";
+        String m ="can't find root";
+        if (seq==null){
+         m="can't find root";}
         for (int i=0;i<seq.length;i++){
             String[] temp = getSdpTerm(seq[i]);
             if (temp[2].equals("Root")){
@@ -136,8 +143,7 @@ public class SdpSimilarService {
     *
     * */
     public float calDspVec(String queryI,String queryII){
-        float re = 0;
-        int count=0;
+
         String[] s1Vec = getSArrray(queryI);
 
         String[] s2Vec = getSArrray(queryII);
@@ -152,13 +158,28 @@ public class SdpSimilarService {
             if (!que_coreII.contains(s)){
             que_coreII.add(s);}
         }
-        float[][] calVec = new float[s1Vec.length][s2Vec.length];
+
+        return calStringArray(s1Vec,s2Vec);
+    }
+    /*
+    * 计算两个字符串数组的相似度（通常一个字符串数组里是一个短句的）
+    * */
+    public float calStringArray(String[] s1 ,String[] s2){
+        float re = 0;
+        int count=0;
+        int size1 = s1.length;
+        int size2 = s2.length;
         ArrayList<VecCell> list = new ArrayList<VecCell>();
-        for (int i=0;i<s1Vec.length;i++){
-            for (int j=0;j<s2Vec.length;j++){
-                calVec[i][j]=wordVectorModel.similarity(s1Vec[i],s2Vec[j]);
+        for (int i=0;i<s1.length;i++){
+            for (int j=0;j<s2.length;j++){
                 VecCell temp = new VecCell();
-                temp.setKey(calVec[i][j]);
+                float mm = wordVectorModel.similarity(s1[i],s2[j]);
+                if (mm<0&&s1[i].equals(s2[j])){
+                    mm = 1;
+                }else if (mm<0){
+                    mm =(float) 0.01;
+                }
+                temp.setKey(mm);
                 temp.setX(i);
                 temp.setY(j);
                 list.add(temp);
@@ -168,17 +189,67 @@ public class SdpSimilarService {
 
         while (!list.isEmpty()){
 
-                re+= vecCal.getMaxClearXY(list);
-                count++;
+            re+= vecCal.getMaxClearXY(list);
+            count++;
 
         }
-
-        return re/count;
+        float alpha = size1<size2?(float) (size1+size2)/(2*size2):(float) (size1+size2)/(2*size1);
+        return re/count * alpha;
     }
 
     /*
-    * 根据语义列表 A_1 B_2 Root 和Root，寻找与root有关的成分
+    * 计算长句的相似度，
     * */
+    public float calLongSeqList(List<String[]> l1,List<String[]> l2){
+        int size1 = l1.size();
+        int size2 = l2.size();
+        float re =0;
+        int count=0;
+        ArrayList<VecCell> list = new ArrayList<VecCell>();
+        for (int i=0;i<size1;i++){
+            for (int j=0;j<size2;j++){
+                VecCell vecCell = new VecCell();
+                float temp = calStringArray(l1.get(i),l2.get(j));
+                if (Float.isNaN(temp)||Float.isInfinite(temp)){
+                    vecCell.setKey(0);
+                }else {
+                    vecCell.setKey(temp);}
+                vecCell.setX(i);
+                vecCell.setY(j);
+                list.add(vecCell);
+            }
+        }
+        Collections.sort(list);
+
+        while (!list.isEmpty()){
+
+            re+= vecCal.getMaxClearXY(list);
+            count++;
+
+        }
+        float alpha = size1<size2?(float) (size1+size2)/(2*size2):(float) (size1+size2)/(2*size1);
+        return re/count * alpha ;
+
+    }
+/*
+*
+* 从数据取sdp_re 并解析 返回每个短句关键部分组成的list
+* */
+    public List<String[]> getSdp_List(String sdp_re) {
+        List<String[]> re = new ArrayList<String[]>();
+        if (sdp_re.contains("##")){
+        String[] fir_floor=sdp_re.split("##");
+        for (String s:fir_floor){
+            if (s.contains("@"))
+            re.add(s.split("@"));
+        }
+        }
+        return re;
+    }
+
+    /*
+        * 根据语义列表 A_1 B_2 Root 和Root，寻找与root有关的成分
+        * */
     private String[] getTermFromSeq(String[] answer,String root){
 
         ArrayList<String> re = new ArrayList<String>();
@@ -196,11 +267,14 @@ public class SdpSimilarService {
 
         return  (String[]) re.toArray(new String[re.size()]);
     }
+    /*
+    * 输入正常的两句话返回相似度
+    * */
 
     public float clauseRe(String s1,String s2){
         que_coreI.clear();
         que_coreII.clear();
-        sentenceII.clear();
+       // sentenceII.clear();
         sentenceI.clear();
         float re=0;
         int count=0;
