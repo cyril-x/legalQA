@@ -1,12 +1,12 @@
 function findAnswer() {
     var inputdata = document.getElementById("queuetext").value;
     var dmif = $("#dm_classify").prop("checked");
-    var sdpif = $("#sdp_if").prop("checked");
+    var method = $("#similarMethod option:selected").val();
     if (inputdata!=null&&inputdata!="") {
         var conten = {
             "input": inputdata,
             "dm":dmif,
-            "sdp":sdpif,
+            "method":method,
         }
 
         $.ajax({

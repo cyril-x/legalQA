@@ -186,8 +186,8 @@ public class SdpSimilarService {
             count++;
 
         }
-
-        return re/count ;
+        float alpha = size1<size2?(float) (size1+size2)/(2*size2):(float) (size1+size2)/(2*size1);
+        return re/count * alpha;
     }
 
     /*
