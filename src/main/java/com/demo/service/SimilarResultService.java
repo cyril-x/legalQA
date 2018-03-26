@@ -42,7 +42,7 @@ public class SimilarResultService {
     @Autowired
     SdpSimilarService sdpSimilarService;
 
-        public JSONArray getAnswer(String query,Boolean dmif,Boolean sdpif)  {
+        public JSONArray getAnswer(String query,Boolean dmif,int method)  {
             ArrayList<Integer> queNum;
 
             int qDm = dmService.getDm(query);
@@ -57,10 +57,13 @@ public class SimilarResultService {
             JSONArray jsonArray = new JSONArray();
             int size = queNum.size();
             ArrayList<NumScore> relist;
-            if (sdpif){
-                relist = getSdpNumScore(queNum,query);
+            if (method==1){
+                relist = getWord2VecNumScore(queNum,query);
+
+            }else if(method ==2){
+                relist= getSdpNumScore(queNum,query);
             }else {
-                relist= getWord2VecNumScore(queNum,query);
+                relist = getWord2VecNumScore(queNum,query);
             }
 
 
