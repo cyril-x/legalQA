@@ -40,12 +40,13 @@ public class SdpService {
         for (int i=0;i<size;i++){
             String[] tar = answer.get(i);
             for (String s:tar){
-                stringBuilder.append(s+" ");
+                stringBuilder.append(s+"@");
             }
             stringBuilder.append("##");
         }
         return stringBuilder.toString();
     }
+
 
     public List<String[]> handleQuery(String s){
         List<String[]> re = new ArrayList<String[]>();

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -35,7 +37,10 @@ public class SimilarResultService {
     public LTPService ltpService;
 
     @Autowired
-    public SdpSimilarService dspsimilarService;
+    SdpService sdpService;
+
+    @Autowired
+    SdpSimilarService sdpSimilarService;
 
         public JSONArray getAnswer(String query,Boolean dmif,Boolean sdpif)  {
             ArrayList<Integer> queNum;
@@ -57,12 +62,9 @@ public class SimilarResultService {
             }else {
                 relist= getWord2VecNumScore(queNum,query);
             }
-            int[] num=new int[3];
-            float[] result=new float[3];
 
-            float temp=0;
-            int tempnum=0;
-            Vector target = docvector.query(query);
+
+            Collections.sort(relist);
 
             int maxsize;
             if (size>=3){
@@ -83,12 +85,12 @@ public class SimilarResultService {
 
             for (int i=0;i<maxsize;i++){
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put("num",queNum.get(num[i]));
-                jsonObject.put("dm",similarResultDao.getDm(queNum.get(num[i])));
-                jsonObject.put("questionTitle",similarResultDao.getTitle(queNum.get(num[i])));
-                jsonObject.put("questionContent",similarResultDao.getContent(queNum.get(num[i])));
-                jsonObject.put("response",similarResultDao.getAnswer(queNum.get(num[i])));
-                jsonObject.put("result",result[i]);
+                jsonObject.put("num",relist.get(i).getNum());
+                jsonObject.put("dm",similarResultDao.getDm(relist.get(i).getNum()));
+                jsonObject.put("questionTitle",similarResultDao.getTitle(relist.get(i).getNum()));
+                jsonObject.put("questionContent",similarResultDao.getContent(relist.get(i).getNum()));
+                jsonObject.put("response",similarResultDao.getAnswer(relist.get(i).getNum()));
+                jsonObject.put("result",relist.get(i).getScore());
                 jsonArray.add(jsonObject);
             }
 
@@ -96,9 +98,7 @@ public class SimilarResultService {
         }
 
 
-    public float getSdpSimilarity(String s1,String s2){
-            return dspsimilarService.getSdpSimilarity(s1,s2);
-    }
+
 
     public ArrayList<NumScore> getWord2VecNumScore( ArrayList<Integer> list, String query){
         ArrayList<NumScore> re = new ArrayList<NumScore>();
@@ -121,11 +121,20 @@ public class SimilarResultService {
     }
 
     public ArrayList<NumScore> getSdpNumScore(ArrayList<Integer> list, String query){
+        List<String[]> queHanledquery = sdpService.handleQuery(query);
         ArrayList<NumScore> re = new ArrayList<NumScore>();
+
         int size = list.size();
         for (int i=0;i<size;i++){
-            String quetemp= similarResultDao.getContent(list.get(i))+similarResultDao.getTitle(list.get(i));
-            //TODO 未完待续。。。先把结果插入到数据库的。。。。。
+            String contemp= similarResultDao.getSdp_reFromNum(list.get(i));
+            List<String[]> data = sdpSimilarService.getSdp_List(contemp);
+            if (contemp!=null&!contemp.equals("")){
+                NumScore numScore = new NumScore(list.get(i));
+             numScore.setScore(sdpSimilarService.calLongSeqList(data,queHanledquery));
+             re.add(numScore);
+                System.out.println(list.get(i)+"is over");
+            }
+
         }
 
 
@@ -148,12 +157,12 @@ public class SimilarResultService {
     public JSONObject getCompareRe(String s1, String s2){
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("sdp",dspsimilarService.clauseRe(s1,s2));
+        jsonObject.put("sdp",sdpSimilarService.clauseRe(s1,s2));
         jsonObject.put("vec",getWord2VecSimilarity(s1,s2));
-        ArrayList<String> queryI = dspsimilarService.que_coreI;
-        ArrayList<String> queryII = dspsimilarService.que_coreII;
-        jsonObject.put("queryIAll",dspsimilarService.getSdpAnalys(s1).split("\n"));
-        jsonObject.put("queryIIAll",dspsimilarService.getSdpAnalys(s2).split("\n"));
+        ArrayList<String> queryI = sdpSimilarService.que_coreI;
+        ArrayList<String> queryII = sdpSimilarService.que_coreII;
+        jsonObject.put("queryIAll",sdpSimilarService.getSdpAnalys(s1).split("\n"));
+        jsonObject.put("queryIIAll",sdpSimilarService.getSdpAnalys(s2).split("\n"));
         jsonObject.put("queryI",queryI);
         jsonObject.put("queryII",queryII);
 

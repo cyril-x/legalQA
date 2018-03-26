@@ -27,6 +27,6 @@ public class NumScore implements Comparable<NumScore> {
 
     @Override
     public int compareTo(NumScore o) {
-        return o.score>score?1:-1;
+        return o.score>=score?1:-1;
     }
 }

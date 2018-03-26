@@ -53,5 +53,6 @@ public interface SimilarResultDao {
     @Update("update test_question_110 set sdp_re=#{sdp_re} where num = #{num}")
     void insertSdpRe(@Param("sdp_re") String sdp_re,@Param("num")int num);
 
-
+    @Select("select sdp_re from test_question_110 where num=#{num}")
+    String getSdp_reFromNum(@Param("num") int num );
 }
