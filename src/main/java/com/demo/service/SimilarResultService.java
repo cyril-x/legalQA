@@ -11,7 +11,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -42,9 +47,19 @@ public class SimilarResultService {
     @Autowired
     SdpSimilarService sdpSimilarService;
 
-        public JSONArray getAnswer(String query,Boolean dmif,int method)  {
-            ArrayList<Integer> queNum;
-
+    ArrayList<Integer> queNum;
+    java.util.Vector<NumScore> relist = new java.util.Vector<>();
+    int size;
+    Iterator queNumIt;
+    List<String[]> queHanledquery;
+    String query;
+    Vector target;
+    ExecutorService service;
+    CountDownLatch latch;
+    boolean flag;//判断多线程是否跑完，防止提前进行排序
+        public JSONArray getAnswer(String query,Boolean dmif,int method) throws InterruptedException {
+            relist.clear();
+            this.query = query;
             int qDm = dmService.getDm(query);
             if (dmif) {
                queNum  = similarResultDao.getNumFromDm(qDm);
@@ -55,27 +70,27 @@ public class SimilarResultService {
             }
 
             JSONArray jsonArray = new JSONArray();
-            int size = queNum.size();
-            ArrayList<NumScore> relist;
+            int resize = queNum.size();
+
             if (method==1){
-                relist = getWord2VecNumScore(queNum,query);
+                getWord2VecNumScore();
 
             }else if(method ==2){
-                relist= getSdpNumScore(queNum,query);
+                getSdpNumScore(query);
             }else {
-                relist = getWord2VecNumScore(queNum,query);
+                getWord2VecNumScore();
             }
 
 
             Collections.sort(relist);
 
             int maxsize;
-            if (size>=3){
+            if (resize>=3){
                 maxsize =3;
             }else {
-                maxsize = size;
+                maxsize = resize;
             }
-            if (size>0){
+            if (resize>0){
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("re",maxsize+1);
                 jsonArray.add(jsonObject);
@@ -103,45 +118,51 @@ public class SimilarResultService {
 
 
 
-    public ArrayList<NumScore> getWord2VecNumScore( ArrayList<Integer> list, String query){
-        ArrayList<NumScore> re = new ArrayList<NumScore>();
-        Vector target = docvector.query(query);
-        int size = list.size();
-        for (int i=0;i<size;i++){
-            String vector = similarResultDao.getVecFromNum(list.get(i));
-            if (vector.equals("")){
-                System.out.println(list.get(i));
-                continue;}
-           float temp=docvector.vecstrToVec(vector).cosineForUnitVector(target);
-            NumScore ns = new NumScore(list.get(i));
-            ns.setScore(temp);
-            synchronized (re){
-            if (!re.contains(ns))
-                re.add(ns);
-            }
-        }
-        return re;
+    public void getWord2VecNumScore() throws InterruptedException {
+        target= docvector.query(query);
+        queNumIt = queNum.iterator();
+        service = Executors.newFixedThreadPool(6);
+        latch = new CountDownLatch(6);
+        Word2VecThread thread1 = new Word2VecThread(latch,"1");
+        Word2VecThread thread2 = new Word2VecThread(latch,"2");
+        Word2VecThread thread3 = new Word2VecThread(latch,"3");
+        Word2VecThread thread4 = new Word2VecThread(latch,"4");
+        Word2VecThread thread5 = new Word2VecThread(latch,"5");
+        Word2VecThread thread6 = new Word2VecThread(latch,"6");
+        service.execute(thread1);
+        service.execute(thread2);
+        service.execute(thread3);
+        service.execute(thread4);
+        service.execute(thread5);
+        service.execute(thread6);
+        service.shutdown();
+        service.awaitTermination(60,TimeUnit.SECONDS);
+
+
     }
 
-    public ArrayList<NumScore> getSdpNumScore(ArrayList<Integer> list, String query){
-        List<String[]> queHanledquery = sdpService.handleQuery(query);
-        ArrayList<NumScore> re = new ArrayList<NumScore>();
+    public void getSdpNumScore( String query) throws InterruptedException {
+        queHanledquery = sdpService.handleQuery(query);
+        queNumIt = queNum.iterator();
+        service = Executors.newFixedThreadPool(6);
+        latch = new CountDownLatch(6);
+        SdpSimilarThread thread1 = new SdpSimilarThread(latch,"1");
+        SdpSimilarThread thread2 = new SdpSimilarThread(latch,"2");
+        SdpSimilarThread thread3 = new SdpSimilarThread(latch,"3");
+        SdpSimilarThread thread4 = new SdpSimilarThread(latch,"4");
+        SdpSimilarThread thread5 = new SdpSimilarThread(latch,"5");
+        SdpSimilarThread thread6 = new SdpSimilarThread(latch,"6");
+        service.execute(thread1);
+        service.execute(thread2);
+        service.execute(thread3);
+        service.execute(thread4);
+        service.execute(thread5);
+        service.execute(thread6);
+        service.shutdown();
+        service.awaitTermination(60,TimeUnit.SECONDS);
 
-        int size = list.size();
-        for (int i=0;i<size;i++){
-            String contemp= similarResultDao.getSdp_reFromNum(list.get(i));
-            List<String[]> data = sdpSimilarService.getSdp_List(contemp);
-            if (contemp!=null&!contemp.equals("")){
-                NumScore numScore = new NumScore(list.get(i));
-             numScore.setScore(sdpSimilarService.calLongSeqList(data,queHanledquery));
-             re.add(numScore);
-                System.out.println(list.get(i)+"is over");
-            }
-
-        }
 
 
-        return  re;
     }
 
     public float getWord2VecSimilarity(String s1,String s2){
@@ -172,6 +193,71 @@ public class SimilarResultService {
 
         return  jsonObject;
     }
+    class SdpSimilarThread implements Runnable{
 
+        private CountDownLatch downLatch;
+        private String name;
+
+        public SdpSimilarThread(CountDownLatch downLatch, String name) {
+            this.downLatch = downLatch;
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+        while (queNumIt.hasNext()){
+            Integer tepInt;
+            synchronized (queNumIt){
+                tepInt =(Integer) queNumIt.next();
+                queNumIt.notifyAll();
+            }
+            String contemp= similarResultDao.getSdp_reFromNum(tepInt);
+            List<String[]> data = sdpSimilarService.getSdp_List(contemp);
+                synchronized (relist){
+                    if (contemp!=null&!contemp.equals("")){
+                        NumScore numScore = new NumScore(tepInt);
+                        numScore.setScore(sdpSimilarService.calLongSeqList(data,queHanledquery));
+                relist.add(numScore);
+                }
+            }
+        }
+        downLatch.countDown();
+        }
+    }
+
+    class Word2VecThread implements Runnable{
+        private CountDownLatch downLatch;
+        private String name;
+
+        public Word2VecThread(CountDownLatch downLatch, String name) {
+            this.downLatch = downLatch;
+            this.name = name;
+        }
+
+        @Override
+        public void run() {
+            while (queNumIt.hasNext()){
+                Integer tepInt;
+                synchronized (queNumIt){
+                    tepInt =(Integer) queNumIt.next();
+                    queNumIt.notifyAll();
+                }
+
+                    String vector = similarResultDao.getVecFromNum(tepInt);
+                    if (vector.equals("")){
+                        System.out.println(tepInt);
+                        continue;}
+                    float temp=docvector.vecstrToVec(vector).cosineForUnitVector(target);
+                    NumScore ns = new NumScore(tepInt);
+                    ns.setScore(temp);
+                    synchronized (relist) {
+                        relist.add(ns);
+                    }
+
+            }
+            downLatch.countDown();
+
+        }
+    }
 
 }
